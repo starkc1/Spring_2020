@@ -93,8 +93,9 @@ class SearchManager:
 
     def search(self, nodeCount, mapInput):
         self.generateNodes(nodeCount)
-
+        
         for pair in mapInput:
+            
             self.nodeList[pair[0]].adjacencyList.append(pair[1])
             self.nodeList[pair[1]].adjacencyList.append(pair[0])
 
