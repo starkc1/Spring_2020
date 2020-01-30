@@ -11,6 +11,9 @@ class SearchClass:
         self.regionList = []
         self.requestedMaxColors = 0
     
+    def getOpen(self):
+        pass
+
     def appendUnexpanded(self, region):
         self.unexpandedList.append(region)
 
@@ -21,17 +24,18 @@ class SearchClass:
         for region in self.regionList:
             if region.color < 1:
                 return False
-            else:
-                return True
+        return True
 
     def getRegionNeighbors(self, region):
         neighborList = []
-
-        for regionIndex in region.neighborList:
-            if self.regionList[regionIndex].color != 0:
-                continue
-
-            neighborList.append(self.regionList[regionIndex])
+        
+        count = 0
+        for region in region.neighborList:
+            if region in self.regionList:
+                if self.regionList[count].color != 0:
+                    continue
+            neighborList.append(self.regionList[count])
+            count += 1
         
         return neighborList
 
@@ -50,6 +54,7 @@ class SearchClass:
         count = 0
         for region in region.neighborList:
             if region in self.regionList:
+                print(self.regionList[count].color)
                 neighborColors.append(self.regionList[count].color)
             count += 1 
             #neighborColors.append(self.regionList[region].color)
@@ -77,11 +82,12 @@ class SearchClass:
         for regionPair in map:
             self.regionList[0].neighborList.append(regionPair[1])
             self.regionList[1].neighborList.append(regionPair[0])
+            print("Print", self.regionList[0])
         
         self.appendUnexpanded(self.regionList[0])
         regionCount = 0
 
-        while self.appendUnexpanded:
+        while self.unexpandedList:
             
             currentRegion = self.getOpen()
 
@@ -91,7 +97,7 @@ class SearchClass:
                 regionCount += 1
 
                 regionColor = self.neighborColors(currentRegion)
-
+                print("Color", regionColor)
                 if regionColor > self.requestedMaxColors:
                     continue
                 else:
@@ -116,7 +122,7 @@ class RegionClass:
         self.parent = parent
 
         self.neighborList = []
-        self.color = colors[0]
+        self.color = 0
 
         if parent:
             self.depth = parent.depth + 1
@@ -130,18 +136,23 @@ class RegionClass:
         return self.parent
 
     def __str__(self):
-        string = self.label + " = " + self.color
-        return string
+        print(self.color)
+        return "{} = {}".format(self.label, str(colors[self.color]))
 
 
 
-colors = ["none", "red", "blue", "green", "yellow", "orange", "purple"]
+colors = ["red", "blue", "green", "yellow", "orange", "purple"]
 
 class BFS_Search(SearchClass):
     def getOpen(self):
         return self.unexpandedList.popleft()
 
+class DFS_Search(SearchClass):
+    def getOpen(self):
+        return self.unexpandedList.pop()
+
 
 bfsSearch = BFS_Search()
-bfsSearch.searching(3, [("r1", "r2"), ("r1", "r3"), ("r2", "r4"), ("r3", "r4")])
-bfsSearch.printRegions()
+map = [("r1", "r2"), ("r1", "r3"), ("r2", "r4"), ("r3", "r4")]
+bfsSearch.searching(3, map)
+#bfsSearch.printRegions()
