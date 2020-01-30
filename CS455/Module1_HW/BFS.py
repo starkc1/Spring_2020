@@ -126,7 +126,7 @@ class SearchNode:
         """
         @return depth of node
         """
-        return depth
+        return self.depth
     
     def __eq__(self, other):
         """
@@ -166,6 +166,12 @@ class SearchNode:
         pass
 
 
+class BFSSearchNode(SearchNode):
+    def getState(self):
+        return self.state
+
+    
+
 class BreadthFirstSearch(SearchClass):
     """
     Concrete implementation of SearchClass for BreadthFirstSearch algorithm
@@ -186,3 +192,45 @@ class BreadthFirstSearch(SearchClass):
         @return search node at front of queue
         """
         return self.openL.popleft()
+
+    def search(self, map, start):
+
+        expanded = []
+
+        self.addOpen(BFSSearchNode(start))
+
+        #print(unexpanded[0]);
+
+        # while unexpanded:
+        #     region = unexpanded.pop(0)
+        #     if region not in expanded:
+        #         expanded.append(region)
+        #         for neighbor in map:
+        #             if region.getState() == neighbor[0]:
+        #                 if neighbor[1] not in expanded:
+        #                     print(neighbor[1], " ", region.getState())
+        #                     node = BFSSearchNode(neighbor[1], region)
+        #                     unexpanded.append(node)
+            
+
+        # while unexpanded:
+        #     region = unexpanded.pop(unexpanded.__len__() - 1)
+        #     print("Current Region", region)
+        #     if region not in expanded:
+        #         expanded.append(region)
+                
+        #         for neighbor in map:
+        #             print("Neighbor", neighbor)
+        #             if neighbor[0] == region:
+        #                 if neighbor[1] not in unexpanded:
+        #                     unexpanded.append(neighbor[1])
+                            
+        #     print("Unexpanded", unexpanded)
+        #     print("Expanded", expanded)
+        #     print()
+
+
+
+map = [("r1", "r2"), ("r1", "r3"), ("r2", "r4"), ("r3", "r4")]
+BFS_Search = BreadthFirstSearch()
+BFS_Search.search(map, "r1")
