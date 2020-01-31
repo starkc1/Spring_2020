@@ -2,7 +2,7 @@ from collections import deque
 
 # CS 455 - Artificial Intelligence
 # Module 1 - Search Homework
-# Contributers - Cameron Stark & Dustin Cribbs
+# Contributers - Cameron Stark & Dustin Cribbs with assitance from Alex Hendrik
 
 class SearchClass:
     def __init__(self):
@@ -28,38 +28,35 @@ class SearchClass:
 
     def getRegionNeighbors(self, region):
         neighborList = []
-        
-        count = 0
+
         for region in region.neighborList:
-            if region in self.regionList:
-                if self.regionList[count].color != 0:
-                    continue
-            neighborList.append(self.regionList[count])
-            count += 1
+            
+            for item in self.regionList:
+                if item.getLabel() == region:
+                    if item.color != 0:
+                        continue
+                    neighborList.append(item)
         
         return neighborList
 
     def hasRegionBeenExpanded(self, region):
-        if region in self.expandedList:
-            return True
-        else:
-            return False
+        if region in self.expandedList: return True
+        return False
 
     def printRegions(self):
         for region in self.regionList:
-            print(str(region), "\n")
+            print(str(region))
     
     def neighborColors(self, region):
         neighborColors = []
+
         count = 0
         for region in region.neighborList:
-            if region in self.regionList:
-                print(self.regionList[count].color)
-                neighborColors.append(self.regionList[count].color)
-            count += 1 
-            #neighborColors.append(self.regionList[region].color)
-        
+            for item in self.regionList:
+                if item.getLabel() == region:
+                    neighborColors.append(item.color)
         color = 1
+
         while True:
             if color in neighborColors:
                 color += 1
@@ -68,49 +65,59 @@ class SearchClass:
 
         return color
 
-    def createUniqueRegionList(self, map):
-        for region in map:
-            if region[0] not in self.regionList:
-                self.regionList.append(RegionClass(region[0]))
-            if region[1] not in self.regionList:
-                self.regionList.append(RegionClass(region[1]))
+    def createUniqueRegionList(self, regionNumber):
+        count = 1
+
+        while count <= regionNumber:
+            self.regionList.append(RegionClass("r" + str(count)))
+            count += 1
+
             
 
-    def searching(self, maxColorCount, map):
-        self.createUniqueRegionList(map)
+    def searching(self, maxColorCount, map, regionNumber):
+        self.createUniqueRegionList(regionNumber)
         self.requestedMaxColors = maxColorCount
-        for regionPair in map:
-            self.regionList[0].neighborList.append(regionPair[1])
-            self.regionList[1].neighborList.append(regionPair[0])
-            print("Print", self.regionList[0])
+
+        count = 0
+        for region in self.regionList:
+            for pair in map:
+                if region.getLabel() == pair[0]:
+                    if pair[0] not in self.regionList[count].neighborList:
+                        self.regionList[count].neighborList.append(pair[1])
+                if region.getLabel() == pair[1]:
+                    if pair[0] not in self.regionList[count].neighborList:
+                        self.regionList[count].neighborList.append(pair[0])
+
+            count += 1
         
         self.appendUnexpanded(self.regionList[0])
         regionCount = 0
 
-        while self.unexpandedList:
+        while len(self.unexpandedList) > 0:
             
             currentRegion = self.getOpen()
-
+            
             if self.hasRegionBeenExpanded(currentRegion):
                 return None
             else:
                 regionCount += 1
 
                 regionColor = self.neighborColors(currentRegion)
-                print("Color", regionColor)
-                if regionColor > self.requestedMaxColors:
-                    continue
-                else:
+                if regionColor <= self.requestedMaxColors:
                     currentRegion.color = regionColor
+                else:
+                    continue
                 
                 self.appendExpanded(currentRegion)
 
                 if self.goalTest():
                     print("Goal reached after ", regionCount, " steps")
                     return currentRegion
-                
+
                 for regionNeighbor in self.getRegionNeighbors(currentRegion):
                     self.appendUnexpanded(regionNeighbor)
+            
+            
 
 
 
@@ -128,6 +135,9 @@ class RegionClass:
             self.depth = parent.depth + 1
         else:
             1
+
+    def getLabel(self):
+        return self.label
     
     def getRegionDepth(self):
         return self.depth
@@ -136,12 +146,11 @@ class RegionClass:
         return self.parent
 
     def __str__(self):
-        print(self.color)
         return "{} = {}".format(self.label, str(colors[self.color]))
 
 
 
-colors = ["red", "blue", "green", "yellow", "orange", "purple"]
+colors = [None, "red", "blue", "green", "yellow", "orange", "purple"]
 
 class BFS_Search(SearchClass):
     def getOpen(self):
@@ -153,6 +162,11 @@ class DFS_Search(SearchClass):
 
 
 bfsSearch = BFS_Search()
+dfsSearch = DFS_Search()
+
 map = [("r1", "r2"), ("r1", "r3"), ("r2", "r4"), ("r3", "r4")]
-bfsSearch.searching(3, map)
-#bfsSearch.printRegions()
+bfsSearch.searching(3, map, 4)
+bfsSearch.printRegions()
+
+dfsSearch.searching(3, map, 4)
+dfsSearch.printRegions()

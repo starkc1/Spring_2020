@@ -110,7 +110,7 @@ class SearchManager:
                 count += 1
 
                 color = self.checkAdjacentColors(currentNode)
-
+                print(color)
                 if color <= self.colorLimit:
                     currentNode.color = color
                 else:
@@ -138,7 +138,7 @@ class DepthFirstSearch(SearchManager):
     
 
 
-search = BreadthFirstSearch()
+#search = BreadthFirstSearch()
 #search = DepthFirstSearch()
 #solution = search.search(3,[(0,1), (0,2), (1,2)])
 solution = search.search(4,[(0,1),(0,2), (1,3), (2,3)])
