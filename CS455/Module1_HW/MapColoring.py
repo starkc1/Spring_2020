@@ -2,6 +2,7 @@ from collections import deque
 
 # CS 455 - Artificial Intelligence
 # Module 1 - Search Homework
+# Based off the provided python search classes
 # Contributers - Cameron Stark & Dustin Cribbs with assitance from Alex Hendrik
 
 class SearchClass:
@@ -115,6 +116,7 @@ class SearchClass:
                     return currentRegion
 
                 for regionNeighbor in self.getRegionNeighbors(currentRegion):
+                    regionNeighbor.parent = currentRegion
                     self.appendUnexpanded(regionNeighbor)
             
             
@@ -134,7 +136,7 @@ class RegionClass:
         if parent:
             self.depth = parent.depth + 1
         else:
-            1
+            self.depth = 1
 
     def getLabel(self):
         return self.label
@@ -160,9 +162,77 @@ class DFS_Search(SearchClass):
     def getOpen(self):
         return self.unexpandedList.pop()
 
+class IDFS_Search(DFS_Search):
+
+    def __init__(self, limit, step=1):
+        super().__init__()
+        self.limit = limit
+        self.step = step
+
+    def searching(self, map, regionNumber):
+        self.createUniqueRegionList(regionNumber)
+        
+        count = 0
+        for region in self.regionList:
+            for pair in map:
+                if region.getLabel() == pair[0]:
+                    if pair[0] not in self.regionList[count].neighborList:
+                        self.regionList[count].neighborList.append(pair[1])
+                if region.getLabel() == pair[1]:
+                    if pair[0] not in self.regionList[count].neighborList:
+                        self.regionList[count].neighborList.append(pair[0])
+
+            count += 1
+        print("\n")
+        for limitCount in range(1, self.limit + 1, self.step):
+            self.unexpandedList.clear()
+            print(self.regionList[0])
+            self.appendUnexpanded(self.regionList[0])
+            self.expandedList.clear()
+        
+            for region in self.regionList:
+                region.color = 0
+
+            count = 0
+            depth = 0
+            
+            while len(self.regionList) > 0:
+                currentRegion = self.getOpen()
+
+                if self.hasRegionBeenExpanded(currentRegion):
+                    return None
+                else:
+                    count += 1
+                    
+                    regionColor = self.neighborColors(currentRegion)
+
+                    if regionColor <= self.requestedMaxColors:
+                        currentRegion.color = regionColor
+                        depth += 1
+                        currentRegion.depth = depth
+                    else:
+                        continue
+
+                    self.appendExpanded(currentRegion)
+
+                    if self.goalTest():
+                        print("Goal reached after ", regionCount, " steps")
+                        return currentRegion
+                    
+                    print(currentRegion.getDepth())
+                    if currentRegion.getDepth() < limitCount:
+                        for regionNode in self.getRegionNeighbors(currentRegion):
+                            regionNeighbor.parent = currentRegion
+                            self.appendUnexpanded(regionNeighbor)
+                    else: 
+                        break
+        return None
+
+
 
 bfsSearch = BFS_Search()
 dfsSearch = DFS_Search()
+idfsSearch = IDFS_Search(10, 1)
 
 map = [("r1", "r2"), ("r1", "r3"), ("r2", "r4"), ("r3", "r4")]
 bfsSearch.searching(3, map, 4)
@@ -170,3 +240,7 @@ bfsSearch.printRegions()
 
 dfsSearch.searching(3, map, 4)
 dfsSearch.printRegions()
+
+idfsSearch.searching(map, 4)
+idfsSearch.printRegions()
+
