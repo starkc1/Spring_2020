@@ -5,29 +5,30 @@ from collections import deque
 # Based off the provided python search classes
 # Contributers - Cameron Stark & Dustin Cribbs with assitance from Alex Hendrik
 
-class SearchClass:
+
+class SearchClass: #Base search class with functions for adding, removing and searching
     def __init__(self):
         self.unexpandedList = deque()
         self.expandedList = set()
         self.regionList = []
-        self.requestedMaxColors = 0
+        self.requestedMaxColors = 3
     
-    def getOpen(self):
+    def getOpen(self): #abstract function for getting the next region
         pass
 
-    def appendUnexpanded(self, region):
+    def appendUnexpanded(self, region): #add region to unvisted list
         self.unexpandedList.append(region)
 
-    def appendExpanded(self, region):
+    def appendExpanded(self, region): #add region to visited list
         self.expandedList.add(region)
 
-    def goalTest(self):
+    def goalTest(self): #test if goal has been reached
         for region in self.regionList:
             if region.color < 1:
                 return False
         return True
 
-    def getRegionNeighbors(self, region):
+    def getRegionNeighbors(self, region): #gets the neighbors of the self region
         neighborList = []
 
         for region in region.neighborList:
@@ -40,15 +41,15 @@ class SearchClass:
         
         return neighborList
 
-    def hasRegionBeenExpanded(self, region):
+    def hasRegionBeenExpanded(self, region): #check if self region has been visited
         if region in self.expandedList: return True
         return False
 
-    def printRegions(self):
+    def printRegions(self): #print function
         for region in self.regionList:
             print(str(region))
     
-    def neighborColors(self, region):
+    def neighborColors(self, region): #gets self region neighbors (children)
         neighborColors = []
 
         count = 0
@@ -66,7 +67,7 @@ class SearchClass:
 
         return color
 
-    def createUniqueRegionList(self, regionNumber):
+    def createUniqueRegionList(self, regionNumber): #creates region list of unique regions
         count = 1
 
         while count <= regionNumber:
@@ -75,12 +76,12 @@ class SearchClass:
 
             
 
-    def searching(self, maxColorCount, map, regionNumber):
+    def searching(self, maxColorCount, map, regionNumber): #base searching function 
         self.createUniqueRegionList(regionNumber)
         self.requestedMaxColors = maxColorCount
 
         count = 0
-        for region in self.regionList:
+        for region in self.regionList: #builds region neighbors
             for pair in map:
                 if region.getLabel() == pair[0]:
                     if pair[0] not in self.regionList[count].neighborList:
@@ -123,7 +124,7 @@ class SearchClass:
 
 
 
-class RegionClass:
+class RegionClass: #base region class with label, parent, neighbor list, depth and color
     
     def __init__(self, label, parent=None):
         
@@ -154,7 +155,7 @@ class RegionClass:
 
 colors = [None, "red", "blue", "green", "yellow", "orange", "purple"]
 
-class BFS_Search(SearchClass):
+class BFS_Search(SearchClass): 
     def getOpen(self):
         return self.unexpandedList.popleft()
 
@@ -169,11 +170,12 @@ class IDFS_Search(DFS_Search):
         self.limit = limit
         self.step = step
 
-    def searching(self, map, regionNumber):
+    def searching(self, maxColorCount, map, regionNumber):
         self.createUniqueRegionList(regionNumber)
+        self.requestedMaxColors = maxColorCount
         
         count = 0
-        for region in self.regionList:
+        for region in self.regionList: #builds region neighbors
             for pair in map:
                 if region.getLabel() == pair[0]:
                     if pair[0] not in self.regionList[count].neighborList:
@@ -183,26 +185,29 @@ class IDFS_Search(DFS_Search):
                         self.regionList[count].neighborList.append(pair[0])
 
             count += 1
-        print("\n")
+        
         for limitCount in range(1, self.limit + 1, self.step):
             self.unexpandedList.clear()
-            print(self.regionList[0])
+            
             self.appendUnexpanded(self.regionList[0])
             self.expandedList.clear()
         
             for region in self.regionList:
                 region.color = 0
 
-            count = 0
+            regionCount = 0
             depth = 0
             
             while len(self.regionList) > 0:
+                
                 currentRegion = self.getOpen()
-
+                
                 if self.hasRegionBeenExpanded(currentRegion):
                     return None
                 else:
-                    count += 1
+                    
+                    
+                    regionCount += 1
                     
                     regionColor = self.neighborColors(currentRegion)
 
@@ -219,9 +224,9 @@ class IDFS_Search(DFS_Search):
                         print("Goal reached after ", regionCount, " steps")
                         return currentRegion
                     
-                    print(currentRegion.getDepth())
-                    if currentRegion.getDepth() < limitCount:
-                        for regionNode in self.getRegionNeighbors(currentRegion):
+                    
+                    if currentRegion.getRegionDepth() < limitCount:
+                        for regionNeighbor in self.getRegionNeighbors(currentRegion):
                             regionNeighbor.parent = currentRegion
                             self.appendUnexpanded(regionNeighbor)
                     else: 
@@ -241,6 +246,6 @@ bfsSearch.printRegions()
 dfsSearch.searching(3, map, 4)
 dfsSearch.printRegions()
 
-idfsSearch.searching(map, 4)
+idfsSearch.searching(3, map, 4)
 idfsSearch.printRegions()
 
