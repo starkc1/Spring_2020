@@ -43,6 +43,7 @@ class Chromosome:
         """
         pass
 
+
 class GeneticAlgorithm:
     """
     Defines an abstract class for genetic algorithm.  All methods are implemetned
