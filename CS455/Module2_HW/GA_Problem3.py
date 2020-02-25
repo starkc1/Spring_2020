@@ -26,7 +26,7 @@ class GeneticAlgorithm_MultiKnapsack:
             chromosome.calculateFitness(self.knapsacks, self.items)
             self.population.append(chromosome)
         
-        print("Population Created")
+        #print("Population Created")
     
     def createPopulation_WithDefined(self, knapsacks, items, populationCount):
         self.knapsackCount = len(knapsacks)
@@ -48,16 +48,20 @@ class GeneticAlgorithm_MultiKnapsack:
         i = 0
         while (len(self.population) < self.populationCount):
             if i < self.populationCount - 1:
-                parent1 = self.population[i]
-                parent2 = self.population[i + 1]
+                if self.population[i].fitness > 0:
+                    parent1 = self.population[i]
+                    parent2 = self.population[i + 1]
+                    
+                    child1, child2 = mating.crossover(parent1.chromosome, parent2.chromosome)
+                    child1.calculateFitness(self.knapsacks, self.items)
+                    child2.calculateFitness(self.knapsacks, self.items)
 
-                child1, child2 = mating.crossover(parent1.chromosome, parent2.chromosome)
-                child1.calculateFitness(self.knapsacks, self.items)
-                child2.calculateFitness(self.knapsacks, self.items)
-
-                self.population.append(child1)
-                self.population.append(child2)
-            
+                    self.population.append(child1)
+                    self.population.append(child2)
+                else:
+                    child = mating.mutate(self.population[i].chromosome, self.knapsackCount)
+                    child.calculateFitness(self.knapsacks, self.items)
+                    self.population.append(child)
             else:
 
                 parent1 = self.population[i]
@@ -79,13 +83,22 @@ class GeneticAlgorithm_MultiKnapsack:
             if i % 2 > mutationRate:
                 child = mating.mutate(self.population[i].chromosome, self.knapsackCount)
                 child.calculateFitness(self.knapsacks, self.items)
+                self.population[i] = child
 
-            print("Current Fitness: {} | Current Chromosome: {} | Current Generation: {}".format(self.population[i].fitness, self.population[i].chromosome, i))
+            print("Fitness: {} | Chromosome: {} | Generation: {}".format(self.population[i].fitness, self.population[i].chromosome, i))
             i += 1
 
-        print("Best Fitness: {} | Chromosome: {}".format(bestFitness, self.population[bestFitnessIndex].chromosome))
+        print("\nBest Fitness: {} | Chromosome: {}".format(bestFitness, self.population[bestFitnessIndex].chromosome))
+        for i in range(len(self.knapsacks)):
+            knapsackItems = []
+            profit = 0
+            for j in range(len(self.population[bestFitnessIndex].chromosome)):
+                if self.knapsacks[i].name == self.population[bestFitnessIndex].chromosome[j]:
+                    knapsackItems.append(j)
+                    profit += self.items[j].profit
+            print("Knapsack Name: {} | Max Weight: {} | Weight Remaining: {} | Items: {} | Profit: {}".format(self.knapsacks[i].name, self.knapsacks[i].weightLimit, self.knapsacks[i].weightRemaining, knapsackItems, profit))
 
-        
+
 
 class Mating:
 
@@ -138,6 +151,7 @@ class Chromosome:
                 if knapsack.name == self.chromosome[i]:
                     if items[i].weight > knapsack.weightRemaining:
                         continue
+                        #fitness += 0
                     else:
                         knapsack.weightRemaining -= items[i].weight
                         fitness += items[i].profit
@@ -160,17 +174,17 @@ class Knapsack:
 
 
 GA = GeneticAlgorithm_MultiKnapsack()
-knapsackCount = 5
+knapsackCount = 3
 knapsackMinWeight = 10
 knapsackMaxWeight = 50
 
-itemCount = 10
+itemCount = 5
 itemMinWeight = 5
 itemMaxWeight = 35
 itemMinProfit = 5
 itemMaxProfit = 45
 
-populationCount = 50
+populationCount = 200
 GA.createPopulation(knapsackCount, knapsackMinWeight, knapsackMaxWeight, itemCount, itemMinWeight, itemMaxWeight, itemMinProfit, itemMaxProfit, populationCount)
 mutationRate = 0.65
 GA.runGenerations(mutationRate)
