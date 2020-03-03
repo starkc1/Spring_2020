@@ -1,13 +1,21 @@
 import numpy as np
 import random
 import operator as op
+import copy
 
-class GeneticAlgorithm_MultiKnapsack:
+# CS 455 - Artificial Intelligence
+# Module 2 - Genetic Algorithm Homework
+# Based off the provided python GA classes and tutorials online
+# Contributers - Cameron Stark & Dustin Cribbs
+# Sources - used the below url as basis of understanding how to go about implementing the multi-knapsack problem
+    #https://github.com/Somnibyte/Multiple-Knapsack-Problem-Genetic-Algorithm
+
+class GeneticAlgorithm_MultiKnapsack: # Class containing the population creation and run command
 
     def __init__(self):
         pass
 
-    def createPopulation(self, knapsackCount, knapsackMinWeight, knapsackMaxWeight, itemCount, itemMinWeight, itemMaxWeight, itemMinProfit, itemMaxProfit, populationCount):
+    def createPopulation(self, knapsackCount, knapsackMinWeight, knapsackMaxWeight, itemCount, itemMinWeight, itemMaxWeight, itemMinProfit, itemMaxProfit, populationCount): #create the population with random knapsack values, item values based on parameters
         self.knapsackCount = knapsackCount
         self.itemCount = itemCount
         self.populationCount = populationCount
@@ -28,7 +36,7 @@ class GeneticAlgorithm_MultiKnapsack:
         
         #print("Population Created")
     
-    def createPopulation_WithDefined(self, knapsacks, items, populationCount):
+    def createPopulation_WithDefined(self, knapsacks, items, populationCount): #create population with user defined knapsacks and items, 
         self.knapsackCount = len(knapsacks)
         self.itemCount = len(items)
         self.populationCount = populationCount
@@ -41,7 +49,7 @@ class GeneticAlgorithm_MultiKnapsack:
             chromosome.calculateFitness(self.knapsacks, self.items)
             self.population.append(chromosome)
 
-    def runGenerations(self, mutationRate):
+    def runGenerations(self, mutationRate): #runs the population and generates new children to the knapsack and prints the optimal solution
         mating = Mating()
         bestFitness = self.population[0].fitness
         bestFitnessIndex = 0
@@ -96,13 +104,12 @@ class GeneticAlgorithm_MultiKnapsack:
                 if self.knapsacks[i].name == self.population[bestFitnessIndex].chromosome[j]:
                     knapsackItems.append(j)
                     profit += self.items[j].profit
-            print("Knapsack Name: {} | Max Weight: {} | Weight Remaining: {} | Items: {} | Profit: {}".format(self.knapsacks[i].name, self.knapsacks[i].weightLimit, self.knapsacks[i].weightRemaining, knapsackItems, profit))
+            print("Knapsack Name: {} | Items: {} | Profit: {}".format(self.knapsacks[i].name, knapsackItems, profit))
 
 
+class Mating: #Class to define the two mating processes
 
-class Mating:
-
-    def crossover(self, chromosome1, chromosome2):
+    def crossover(self, chromosome1, chromosome2): #defines the crossover functionality with the pivot/cross over point and the new children chromosomes
         crossoverPoint = random.randint(1, len(chromosome1) - 1)
 
         crossChromosome1 = chromosome1[crossoverPoint:]
@@ -119,7 +126,7 @@ class Mating:
 
         return newChromosome1, newChromosome2
 
-    def mutate(self, chromosome, knapsackCount):
+    def mutate(self, chromosome, knapsackCount): #defines the mutate functionality which randomly changes the value
 
         for i in range(len(chromosome)):
             k = random.uniform(0, 1)
@@ -131,9 +138,9 @@ class Mating:
         return newChromosome
 
 
-class Chromosome:
+class Chromosome: #Defines the chromosome class
     
-    def __init__(self, knapsackCount, itemCount, chromosome = None):
+    def __init__(self, knapsackCount, itemCount, chromosome = None): #initialize the chromosome with random knapsack values
         self.chromosome = []
         if chromosome == None:
             
@@ -143,11 +150,11 @@ class Chromosome:
         else:
             self.chromosome = chromosome
 
-    def calculateFitness(self, knapsacks, items):
+    def calculateFitness(self, knapsacks, items): #calculates the fitness for each chromosome
         fitness = 0
-
+        knapsacksCopy = copy.deepcopy(knapsacks)
         for i in range(len(self.chromosome)):
-            for knapsack in knapsacks:
+            for knapsack in knapsacksCopy:
                 if knapsack.name == self.chromosome[i]:
                     if items[i].weight > knapsack.weightRemaining:
                         continue
@@ -184,7 +191,7 @@ itemMaxWeight = 35
 itemMinProfit = 5
 itemMaxProfit = 45
 
-populationCount = 200
+populationCount = 20
 GA.createPopulation(knapsackCount, knapsackMinWeight, knapsackMaxWeight, itemCount, itemMinWeight, itemMaxWeight, itemMinProfit, itemMaxProfit, populationCount)
 mutationRate = 0.65
 GA.runGenerations(mutationRate)
