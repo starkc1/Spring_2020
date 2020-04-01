@@ -4,9 +4,18 @@ from sklearn.preprocessing import StandardScaler
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, f1_score
-from sklearn import metrics
+#from sklearn import metrics
 
 from sklearn.linear_model import LogisticRegression
+
+from sklearn import svm, datasets
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from sklearn.multiclass import OneVsRestClassifier
+from scipy import interp
+from sklearn.metrics import roc_auc_score
+
 
 import numpy as np
 import pandas as pd
@@ -21,7 +30,6 @@ def buildAndPrintKNN(df, target):
     clf = KNeighborsClassifier(n_neighbors=10)
     s = StandardScaler()
     df = s.fit_transform(df)
-
 
     target_pred = cross_val_predict(clf, df, target, cv = 5)
 
@@ -61,7 +69,7 @@ def buildAndPrintLogRegression(df, target):
     
 
     target_pred = cross_val_predict(clf, df, target, cv = 5)
-    print("\nLogistic Regression")
+    print("\nLogistic Regression") 
     print("Confusion Matrix:")
     print(confusion_matrix(target, target_pred))
     print("Accuracy: " + str(accuracy_score(target, target_pred)))

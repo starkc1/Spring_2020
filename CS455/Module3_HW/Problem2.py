@@ -4,15 +4,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.linear_model import Ridge
 
 import numpy as np
 import pandas as pd
 from pandas.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 
-
 def printAndPlotLinReg(data, target):
-    train_X, test_X, train_y, test_y = train_test_split(data, target, test_size = 0.33)
+    train_X, test_X, train_y, test_y = train_test_split(data, target)
 
     lin_reg = LinearRegression()
     lin_reg.fit(train_X, train_y)
@@ -21,15 +21,15 @@ def printAndPlotLinReg(data, target):
     print("\nTheta:")
     print(lin_reg.intercept_, lin_reg.coef_)
 
-    plt.figure("a")
-    plt.hist(abs(test_y - pred_y), bins = 100)
-    plt.xlabel("Error ($k)")
+    # plt.figure("a")
+    # plt.hist(abs(test_y - pred_y), bins = 100)
+    # plt.xlabel("Error ($k)")
     
-
+    plot("Linear Regression", test_y, pred_y)
     print("MAE = " + str(mean_absolute_error(test_y, pred_y)))
 
     # plt.figure("b")
-    plot_learning_curves(lin_reg, train_X, train_y)
+    plot_learning_curves(lin_reg, train_X, train_y, "Linear Regression")
     # plt.axis([0, 300, 0, 10])
     plt.show()
 
@@ -37,10 +37,30 @@ def printAndPlotPoly(data, target):
     poly = PolynomialFeatures(2)
     data = poly.fit_transform(data)
 
+def printAndPlotLingReg_Regularization(data, target):
+    train_X, test_X, train_y, test_y = train_test_split(data, target)
+
+    ridge = Ridge(alpha = 0.01)
+    ridge.fit(train_X, train_y)
+
+    lin_reg = LinearRegression()
+    pred_y = ridge.predict(test_X)
     
+    print("Theta:")
+    print(ridge.intercept_, ridge.coef_)
+    
+    plot("Ridge", test_y, pred_y)
+    print("MAE = " + str(mean_absolute_error(test_y, pred_y)))
 
+    plot_learning_curves(ridge, train_X, train_y, "Ridge")
+    plt.show()
+    
+def plot(model, test_y, pred_y):
+    plt.figure(model + " a")
+    plt.hist(abs(test_y - pred_y), bins = 100)
+    plt.xlabel("Error ($k)")
 
-def plot_learning_curves(model, X, y):
+def plot_learning_curves(model, X, y, modelName):
     train_X, test_X, train_y, test_y = train_test_split(X, y, test_size = 0.2)
 
     training_errors, validation_errors = [], []
@@ -56,14 +76,12 @@ def plot_learning_curves(model, X, y):
         validation_errors.append(np.sqrt(mean_squared_error(test_y, test_pred)))
 
     #print(training_errors)
-    plt.figure('b')
+    plt.figure(modelName + ' b')
     plt.plot(training_errors, "r-+", label = "train")
     plt.plot(validation_errors, "b-", label = "test")
     plt.legend()
     #plt.axis([0, 80, 0, 3])
     
-
-
 def printDataDetails(dataset): 
     data = dataset['data']
     headers = dataset['feature_names']
@@ -72,7 +90,6 @@ def printDataDetails(dataset):
     print("\nData Shape & Details")
     print(df.shape)
     print(df.describe().loc[['max', 'min', 'mean']])
-
 
 def getDiabetesData():
     return datasets.load_diabetes()
@@ -89,5 +106,6 @@ def main():
     target = df['target']
     printAndPlotLinReg(data, target)
     printAndPlotPoly(data, target)
+    printAndPlotLingReg_Regularization(data, target)
 
 main()
