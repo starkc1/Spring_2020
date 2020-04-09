@@ -109,7 +109,7 @@ def main():
     df = loadDataset()
     target = loadTargetDataset()
     printDataDetails(df)
-    #plotData(df)
+    plotData(df)
     buildAndPrintKNN(df, target)
     buildAndPrintLogRegression(df, target)
 

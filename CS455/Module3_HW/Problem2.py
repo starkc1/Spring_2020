@@ -34,8 +34,7 @@ def printAndPlotLinReg(data, target):
     plt.show()
 
 def printAndPlotPoly(data, target):
-    poly = PolynomialFeatures(2)
-    data = poly.fit_transform(data)
+    print("Polynomial Regression")
 
 def printAndPlotLingReg_Regularization(data, target):
     train_X, test_X, train_y, test_y = train_test_split(data, target)
@@ -54,6 +53,7 @@ def printAndPlotLingReg_Regularization(data, target):
 
     plot_learning_curves(ridge, train_X, train_y, "Ridge")
     plt.show()
+    
     
 def plot(model, test_y, pred_y):
     plt.figure(model + " a")
@@ -82,11 +82,15 @@ def plot_learning_curves(model, X, y, modelName):
     plt.legend()
     #plt.axis([0, 80, 0, 3])
     
+def plotData(data):
+    scatter_matrix(data, alpha = 0.2, figsize=(12, 12))
+    plt.show()
+
 def printDataDetails(dataset): 
     data = dataset['data']
     headers = dataset['feature_names']
     df = pd.DataFrame(data = data, columns = headers)
-    
+    #plotData(df)
     print("\nData Shape & Details")
     print(df.shape)
     print(df.describe().loc[['max', 'min', 'mean']])
@@ -104,8 +108,9 @@ def main():
     df = loadDataset()
     data = df['data']
     target = df['target']
-    printAndPlotLinReg(data, target)
-    printAndPlotPoly(data, target)
+    
+    #printAndPlotLinReg(data, target)
+    #printAndPlotPoly(data, target)
     printAndPlotLingReg_Regularization(data, target)
 
 main()
