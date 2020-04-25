@@ -13,6 +13,10 @@ import numpy as np
 import pandas as pd
 from pandas.plotting import scatter_matrix
 
+# CS 455 - Artificial Intelligence
+# Homework 4 - Support Vector Machines
+# Contributers - Cameron Stark & Dustin Cribbs
+# Sources - Github and other online resources
 
 def performSVR(data, target):
     train_X, test_X, train_y, test_y = train_test_split(data, target, test_size = 0.20)

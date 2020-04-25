@@ -10,6 +10,11 @@ from matplotlib import pyplot as plt
 import numpy as np 
 import pandas as pd
 
+# CS 455 - Artificial Intelligence
+# Homework 4 - Support Vector Machines
+# Contributers - Cameron Stark & Dustin Cribbs
+# Sources - Github and other online resources
+
 def performSVC(data, target):
     clf = SVC(kernel = 'linear', C = 10)
     s = StandardScaler()

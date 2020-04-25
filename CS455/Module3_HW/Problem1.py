@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 # CS 455 - Artificial Intelligence
 # Homework 3 - KNN and Regression Models
 # Contributers - Cameron Stark & Dustin Cribbs
+# Sources - Github and other online resources
 
 def buildAndPrintKNN(df, target):
     clf = KNeighborsClassifier(n_neighbors=10)

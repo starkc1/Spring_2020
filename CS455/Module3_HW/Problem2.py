@@ -11,6 +11,11 @@ import pandas as pd
 from pandas.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 
+# CS 455 - Artificial Intelligence
+# Homework 3 - KNN and Regression Models
+# Contributers - Cameron Stark & Dustin Cribbs
+# Sources - Github and other online resources
+
 def printAndPlotLinReg(data, target):
     train_X, test_X, train_y, test_y = train_test_split(data, target)
 
